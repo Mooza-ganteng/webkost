@@ -29,7 +29,7 @@ function initializeNavigation() {
   const navMenu = document.getElementById("nav-menu")
   const navLinks = document.querySelectorAll(".nav-link")
 
-  // Navbar scroll effect
+  // Navbar scroll effect (Custom class 'scrolled' in style.css for box-shadow)
   window.addEventListener("scroll", () => {
     if (window.scrollY > 50) {
       navbar.classList.add("scrolled")
@@ -38,7 +38,7 @@ function initializeNavigation() {
     }
   })
 
-  // Mobile menu toggle
+  // Mobile menu toggle (Toggles 'active' for both hamburger bars and menu slide-in)
   hamburger.addEventListener("click", () => {
     hamburger.classList.toggle("active")
     navMenu.classList.toggle("active")
@@ -60,14 +60,17 @@ function initializeNavigation() {
     sections.forEach((section) => {
       const sectionTop = section.offsetTop
       const sectionHeight = section.clientHeight
-      if (scrollY >= sectionTop - 200) {
+      // Reduced offset for the 64px fixed navbar
+      if (scrollY >= sectionTop - 100) { 
         current = section.getAttribute("id")
       }
     })
 
     navLinks.forEach((link) => {
-      link.classList.remove("active")
+      // Remove the old 'active' link logic to avoid CSS conflicts
+      link.classList.remove("active") 
       if (link.getAttribute("href") === `#${current}`) {
+        // Re-add 'active' class to style the current link using the custom CSS logic
         link.classList.add("active")
       }
     })
@@ -144,7 +147,7 @@ function initializeSmoothScroll() {
       const targetSection = document.querySelector(targetId)
 
       if (targetSection) {
-        const offsetTop = targetSection.offsetTop - 70 // Account for fixed navbar
+        const offsetTop = targetSection.offsetTop - 64 // Account for fixed navbar (h-16 is 64px)
 
         window.scrollTo({
           top: offsetTop,
@@ -157,10 +160,12 @@ function initializeSmoothScroll() {
 
 // Utility Functions
 function showNotification(message, type) {
+  // ... (Notification function remains the same, relying on custom CSS)
   const notification = document.createElement("div")
   notification.className = `notification ${type}`
   notification.textContent = message
 
+  // Directly setting styles that are hard to manage with Tailwind in JS
   notification.style.cssText = `
         position: fixed;
         top: 20px;
@@ -189,10 +194,11 @@ function showNotification(message, type) {
   }, 5000)
 }
 
-// Parallax Effect for Hero Section
+// Parallax Effect for Hero Section (Using new class hook)
 window.addEventListener("scroll", () => {
   const scrolled = window.pageYOffset
-  const hero = document.querySelector(".hero")
+  // Changed selector to the new class hook
+  const hero = document.querySelector(".hero-parallax") 
   const rate = scrolled * -0.5
 
   if (hero) {
