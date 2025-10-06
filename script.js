@@ -1,5 +1,5 @@
-// DOM Content Loaded
-document.addEventListener("DOMContentLoaded", () => {
+// DOM Content Loaded (Using jQuery's shorthand: $(function() { ... });)
+$(function() {
   // Initialize all functionality
   initializeLoading()
   initializeNavigation()
@@ -8,70 +8,68 @@ document.addEventListener("DOMContentLoaded", () => {
   initializeSmoothScroll()
 })
 
-// Loading Screen
+// Loading Screen (Migrated to jQuery)
 function initializeLoading() {
-  const loadingScreen = document.getElementById("loading-screen")
+  const $loadingScreen = $("#loading-screen") // Use jQuery selector
 
-  window.addEventListener("load", () => {
+  $(window).on("load", () => { // Use jQuery event handler
     setTimeout(() => {
-      loadingScreen.classList.add("fade-out")
+      $loadingScreen.addClass("fade-out") // Use jQuery class method
       setTimeout(() => {
-        loadingScreen.style.display = "none"
+        $loadingScreen.hide() // Use jQuery show/hide method
       }, 500)
     }, 1000)
   })
 }
 
-// Navigation
+// Navigation (Partially Migrated to jQuery for event handling and classes)
 function initializeNavigation() {
-  const navbar = document.getElementById("navbar")
-  const hamburger = document.getElementById("hamburger")
-  const navMenu = document.getElementById("nav-menu")
-  const navLinks = document.querySelectorAll(".nav-link")
+  const $navbar = $("#navbar")
+  const $hamburger = $("#hamburger")
+  const $navMenu = $("#nav-menu")
+  const $navLinks = $(".nav-link") // Use jQuery selector
 
-  // Navbar scroll effect (Custom class 'scrolled' in style.css for box-shadow)
-  window.addEventListener("scroll", () => {
+  // Navbar scroll effect
+  $(window).on("scroll", () => { // Use jQuery event handler
     if (window.scrollY > 50) {
-      navbar.classList.add("scrolled")
+      $navbar.addClass("scrolled") // Use jQuery class method
     } else {
-      navbar.classList.remove("scrolled")
+      $navbar.removeClass("scrolled") // Use jQuery class method
     }
   })
 
-  // Mobile menu toggle (Toggles 'active' for both hamburger bars and menu slide-in)
-  hamburger.addEventListener("click", () => {
-    hamburger.classList.toggle("active")
-    navMenu.classList.toggle("active")
+  // Mobile menu toggle
+  $hamburger.on("click", () => { // Use jQuery event handler
+    $hamburger.toggleClass("active")
+    $navMenu.toggleClass("active")
   })
 
   // Close mobile menu when clicking on a link
-  navLinks.forEach((link) => {
-    link.addEventListener("click", () => {
-      hamburger.classList.remove("active")
-      navMenu.classList.remove("active")
-    })
+  $navLinks.on("click", () => { // Use jQuery event handler
+    $hamburger.removeClass("active")
+    $navMenu.removeClass("active")
   })
 
-  // Active navigation link
-  window.addEventListener("scroll", () => {
+  // Active navigation link (Keeping the native JS logic structure as it is more complex)
+  $(window).on("scroll", () => {
     let current = ""
     const sections = document.querySelectorAll("section")
 
     sections.forEach((section) => {
       const sectionTop = section.offsetTop
-      const sectionHeight = section.clientHeight
+      // Use jQuery to get section height
+      const sectionHeight = $(section).outerHeight()
       // Reduced offset for the 64px fixed navbar
       if (scrollY >= sectionTop - 100) { 
         current = section.getAttribute("id")
       }
     })
 
-    navLinks.forEach((link) => {
-      // Remove the old 'active' link logic to avoid CSS conflicts
-      link.classList.remove("active") 
-      if (link.getAttribute("href") === `#${current}`) {
-        // Re-add 'active' class to style the current link using the custom CSS logic
-        link.classList.add("active")
+    $navLinks.each(function() { // Use jQuery iteration
+      const $this = $(this)
+      $this.removeClass("active") 
+      if ($this.attr("href") === `#${current}`) {
+        $this.addClass("active")
       }
     })
   })
@@ -99,21 +97,20 @@ function initializeScrollAnimations() {
   })
 }
 
-// Booking Kost via WhatsApp
+// Booking Kost via WhatsApp (Migrated event handler and data retrieval)
 function initializeContactBooking() {
-  const bookingForm = document.getElementById("booking-form")
+  const $bookingForm = $("#booking-form")
 
-  if (!bookingForm) return
+  if (!$bookingForm.length) return // Check if element exists in jQuery way
 
-  bookingForm.addEventListener("submit", function (e) {
+  $bookingForm.on("submit", function (e) { // Use jQuery event handler
     e.preventDefault()
 
-    // Get form data
-    const formData = new FormData(this)
-    const name = formData.get("name")
-    const phone = formData.get("phone")
-    const room = formData.get("room")
-    const message = formData.get("message")
+    // Get form data using jQuery
+    const name = $bookingForm.find("#name").val()
+    const phone = $bookingForm.find("#phone").val()
+    const room = $bookingForm.find("#room").val()
+    const message = $bookingForm.find("#message").val()
 
     // Basic validation
     if (!name || !phone || !room) {
@@ -131,30 +128,26 @@ function initializeContactBooking() {
     // Buka WhatsApp
     window.open(waLink, "_blank")
 
-    bookingForm.reset()
+    this.reset() // Can still use native reset
   })
 }
 
-// Smooth Scroll
+// Smooth Scroll (Migrated to jQuery)
 function initializeSmoothScroll() {
-  const links = document.querySelectorAll('a[href^="#"]')
+  $('a[href^="#"]').on("click", function (e) { // Use jQuery event handler
+    e.preventDefault()
 
-  links.forEach((link) => {
-    link.addEventListener("click", function (e) {
-      e.preventDefault()
+    const targetId = $(this).attr("href") // Get href attribute with jQuery
+    const $targetSection = $(targetId) // Use jQuery selector for target
 
-      const targetId = this.getAttribute("href")
-      const targetSection = document.querySelector(targetId)
+    if ($targetSection.length) { // Check if element exists
+      const offsetTop = $targetSection.offset().top - 64 // Get offsetTop with jQuery and adjust for navbar
 
-      if (targetSection) {
-        const offsetTop = targetSection.offsetTop - 64 // Account for fixed navbar (h-16 is 64px)
-
-        window.scrollTo({
-          top: offsetTop,
-          behavior: "smooth",
-        })
-      }
-    })
+      // Use jQuery's animate function for smooth scrolling
+      $("html, body").animate({
+        scrollTop: offsetTop
+      }, 800) // 800ms duration for smooth scroll
+    }
   })
 }
 
@@ -194,15 +187,14 @@ function showNotification(message, type) {
   }, 5000)
 }
 
-// Parallax Effect for Hero Section (Using new class hook)
-window.addEventListener("scroll", () => {
-  const scrolled = window.pageYOffset
-  // Changed selector to the new class hook
-  const hero = document.querySelector(".hero-parallax") 
+// Parallax Effect for Hero Section (Using jQuery)
+$(window).on("scroll", () => {
+  const scrolled = $(window).scrollTop()
+  const $hero = $(".hero-parallax") 
   const rate = scrolled * -0.5
 
-  if (hero) {
-    hero.style.transform = `translateY(${rate}px)`
+  if ($hero.length) {
+    $hero.css("transform", `translateY(${rate}px)`)
   }
 })
 
@@ -226,19 +218,19 @@ const throttledScrollHandler = throttle(() => {
 window.addEventListener("scroll", throttledScrollHandler)
 
 // Keyboard navigation support
-document.addEventListener("keydown", (e) => {
+$(document).on("keydown", (e) => {
   if (e.key === "Escape") {
-    const hamburger = document.getElementById("hamburger")
-    const navMenu = document.getElementById("nav-menu")
+    const $hamburger = $("#hamburger")
+    const $navMenu = $("#nav-menu")
 
-    if (navMenu.classList.contains("active")) {
-      hamburger.classList.remove("active")
-      navMenu.classList.remove("active")
+    if ($navMenu.hasClass("active")) {
+      $hamburger.removeClass("active")
+      $navMenu.removeClass("active")
     }
   }
 })
 
-// Focus management for accessibility
+// Focus management for accessibility (Keeping native JS, as setting styles is often simpler here)
 document.addEventListener("DOMContentLoaded", () => {
   const focusableElements = document.querySelectorAll(
     'a, button, input, textarea, select, [tabindex]:not([tabindex="-1"])',
